@@ -58,9 +58,9 @@ git commit -m "Initialize StudyVerse AI Study Assistant"
 2.  Create a **new public repository** named `StudyVerse`. Do **not** initialize it with a README, license, or `.gitignore` (as they are already provided here).
 
 ### Step 3: Link Repository and Push
-Run the following commands in your terminal (replace `<your-username>` with your actual GitHub username):
+Run the following commands in your terminal:
 ```bash
-git remote add origin https://github.com/<your-username>/StudyVerse.git
+git remote add origin https://github.com/aashritha-m30/StudyVerse.git
 git branch -M main
 git push -u origin main
 ```
@@ -71,7 +71,8 @@ git push -u origin main
 3.  Under **Build and deployment** -> **Source**, select **GitHub Actions** from the dropdown menu.
 4.  This triggers the automated workflow in `.github/workflows/deploy.yml`!
 5.  After 1-2 minutes, you will receive a notification under the **Actions** tab, along with your live URL:
-    *   **Live Link URL Format**: `https://<your-username>.github.io/StudyVerse/`
+    *   **Live Link URL Format**: `https://aashritha-m30.github.io/StudyVerse/`
+
 
 ---
 
