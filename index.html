@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyVerse - Intelligent AI Study Assistant</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="StudyVerse is an intelligent AI study assistant that lets students upload PDFs, notes, and PPTs to generate custom summaries, interactive quizzes, 3D flashcards, and personalized study plans.">
+  <meta name="keywords" content="study, AI assistant, summaries, quizzes, flashcards, study planner, Gemini API, lavender theme">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- pdf.js (CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- App Container -->
+  <div class="app-layout">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div class="brand-info">
+          <h1>StudyVerse</h1>
+          <span>AI Study Space</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-menu">
+        <button class="nav-item active" data-tab="dashboard" id="nav-dashboard">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-tab="vault" id="nav-vault">
+          <i class="fa-solid fa-folder-open"></i>
+          <span>Materials Vault</span>
+        </button>
+        <button class="nav-item" data-tab="chat" id="nav-chat">
+          <i class="fa-solid fa-comment-dots"></i>
+          <span>AI Chat Assistant</span>
+        </button>
+        <button class="nav-item" data-tab="summary" id="nav-summary">
+          <i class="fa-solid fa-file-invoice"></i>
+          <span>Summary & Notes</span>
+        </button>
+        <button class="nav-item" data-tab="quizzes" id="nav-quizzes">
+          <i class="fa-solid fa-circle-question"></i>
+          <span>Interactive Quizzes</span>
+        </button>
+        <button class="nav-item" data-tab="flashcards" id="nav-flashcards">
+          <i class="fa-solid fa-copy"></i>
+          <span>Smart Flashcards</span>
+        </button>
+        <button class="nav-item" data-tab="planner" id="nav-planner">
+          <i class="fa-solid fa-calendar-check"></i>
+          <span>Study Planner</span>
+        </button>
+        <button class="nav-item" data-tab="settings" id="nav-settings">
+          <i class="fa-solid fa-sliders"></i>
+          <span>Settings</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="status-indicator simulated" id="ai-status">
+          <span class="status-dot"></span>
+          <span class="status-text">Demo Mode</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Top Header -->
+      <header class="app-header">
+        <div class="header-search">
+          <h2 id="section-title">Dashboard</h2>
+        </div>
+        <div class="header-actions">
+          <button class="action-btn upload-shortcut" id="btn-upload-shortcut">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span>Upload File</span>
+          </button>
+          <div class="user-profile">
+            <div class="user-avatar">
+              <i class="fa-solid fa-user-graduate"></i>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Section Pages Container -->
+      <div class="pages-container">
+        
+        <!-- DASHBOARD TAB -->
+        <section id="tab-dashboard" class="tab-page active">
+          <div class="dashboard-grid">
+            
+            <!-- Welcome Banner -->
+            <div class="dash-card welcome-banner">
+              <div class="banner-content">
+                <h3>Welcome back to your StudyVerse! ✨</h3>
+                <p>Upload your notes, PDFs, or PPTs to unlock AI-powered answers, summaries, flashcards, and personalized planners instantly.</p>
+                <div class="banner-actions">
+                  <button class="btn btn-primary" id="btn-banner-add-materials">
+                    <i class="fa-solid fa-plus"></i> Add Study Materials
+                  </button>
+                  <button class="btn btn-secondary-light" id="btn-banner-setup-api">
+                    <i class="fa-solid fa-key"></i> Setup Gemini API Key
+                  </button>
+                </div>
+              </div>
+              <div class="banner-graphic">
+                <i class="fa-solid fa-brain"></i>
+              </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="stats-row">
+              <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-file-pdf"></i></div>
+                <div class="stat-details">
+                  <span class="stat-val" id="stat-docs-count">0</span>
+                  <span class="stat-label">Uploaded Materials</span>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                <div class="stat-details">
+                  <span class="stat-val" id="stat-quizzes-taken">0</span>
+                  <span class="stat-label">Quizzes Completed</span>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-bolt"></i></div>
+                <div class="stat-details">
+                  <span class="stat-val" id="stat-flashcards-reviewed">0</span>
+                  <span class="stat-label">Flashcards Mastered</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Access / Recent Files -->
+            <div class="dash-card recent-materials">
+              <div class="card-header">
+                <h4><i class="fa-solid fa-clock-rotate-left"></i> Loaded Study Materials</h4>
+                <a href="#" id="link-manage-vault" class="view-all">Manage Vault</a>
+              </div>
+              <div class="card-body">
+                <div class="empty-state" id="dash-empty-vault">
+                  <i class="fa-solid fa-folder-open"></i>
+                  <p>No study materials uploaded yet.</p>
+                  <button class="btn btn-outline" id="btn-dash-upload">Upload PDF/Text</button>
+                </div>
+                <ul class="materials-list" id="dash-materials-list" style="display:none;">
+                  <!-- Dynamic content -->
+                </ul>
+              </div>
+            </div>
+
+            <!-- Recommended Actions -->
+            <div class="dash-card recommended-actions">
+              <div class="card-header">
+                <h4><i class="fa-solid fa-wand-magic-sparkles"></i> AI Study Toolkit</h4>
+              </div>
+              <div class="grid-2col">
+                <div class="action-card" id="card-action-chat">
+                  <div class="action-icon chat-icon"><i class="fa-solid fa-comment-dots"></i></div>
+                  <div class="action-info">
+                    <h5>Ask StudyVerse</h5>
+                    <p>Ask natural language questions about your materials and get structured answers.</p>
+                  </div>
+                </div>
+                <div class="action-card" id="card-action-summary">
+                  <div class="action-icon summary-icon"><i class="fa-solid fa-file-invoice"></i></div>
+                  <div class="action-info">
+                    <h5>Summarize Materials</h5>
+                    <p>Extract key takeaways, core glossary definitions, and outlines.</p>
+                  </div>
+                </div>
+                <div class="action-card" id="card-action-quizzes">
+                  <div class="action-icon quiz-icon"><i class="fa-solid fa-circle-question"></i></div>
+                  <div class="action-info">
+                    <h5>Practice Quizzes</h5>
+                    <p>Challenge yourself with generated multiple-choice and true/false tests.</p>
+                  </div>
+                </div>
+                <div class="action-card" id="card-action-flashcards">
+                  <div class="action-icon flash-icon"><i class="fa-solid fa-copy"></i></div>
+                  <div class="action-info">
+                    <h5>Interactive Flashcards</h5>
+                    <p>Memorize key terms using 3D flips and smart mastery tracking.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- MATERIALS VAULT TAB -->
+        <section id="tab-vault" class="tab-page">
+          <div class="vault-container">
+            
+            <div class="grid-2col-vault">
+              <!-- Upload Area -->
+              <div class="vault-card upload-panel">
+                <h3><i class="fa-solid fa-cloud-arrow-up"></i> Upload Study Materials</h3>
+                <p class="subtitle">Drag & drop your files or type notes directly. Supported types: <strong>PDF</strong>, <strong>TXT</strong>, <strong>MD</strong>.</p>
+                
+                <div class="drop-zone" id="drop-zone">
+                  <i class="fa-solid fa-file-arrow-up drop-icon"></i>
+                  <p>Drag and Drop File Here</p>
+                  <span>or</span>
+                  <label class="btn btn-primary file-input-label">
+                    Browse Files
+                    <input type="file" id="file-input" accept=".pdf,.txt,.md" style="display: none;">
+                  </label>
+                  <p class="file-limits">PDF, TXT, or MD (Max 15MB)</p>
+                </div>
+
+                <div class="notes-input-area">
+                  <span class="divider-text">OR PASTE CUSTOM NOTES</span>
+                  <div class="input-group">
+                    <input type="text" id="note-title" placeholder="Note Title (e.g. Biology Lecture 1)">
+                    <textarea id="note-content" placeholder="Paste your notes or text slides here..."></textarea>
+                    <button class="btn btn-secondary w-full" id="btn-save-note">
+                      <i class="fa-solid fa-save"></i> Save Note to Vault
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- List of Materials -->
+              <div class="vault-card vault-list-panel">
+                <h3><i class="fa-solid fa-box-archive"></i> Your Materials Vault</h3>
+                <p class="subtitle">Select files to include them in the AI context. Active files are sent to the AI.</p>
+
+                <div class="vault-actions">
+                  <button class="btn-text" id="btn-select-all"><i class="fa-solid fa-check-double"></i> Select All</button>
+                  <button class="btn-text" id="btn-clear-vault"><i class="fa-solid fa-trash-can"></i> Clear All</button>
+                </div>
+
+                <div class="empty-state" id="vault-empty-state">
+                  <i class="fa-solid fa-folder-open"></i>
+                  <p>Your vault is empty. Upload files or save custom notes to begin studying.</p>
+                </div>
+
+                <div class="vault-list" id="vault-list" style="display:none;">
+                  <!-- Dynamic file items -->
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- AI CHAT TAB -->
+        <section id="tab-chat" class="tab-page">
+          <div class="chat-container">
+            <div class="chat-sidebar">
+              <h3><i class="fa-solid fa-book-bookmark"></i> Context Selection</h3>
+              <p class="chat-context-desc">Select which files the AI will read to answer your questions.</p>
+              
+              <div class="context-list-container" id="chat-context-list">
+                <!-- Checklist of files -->
+              </div>
+              
+              <div class="chat-suggestions">
+                <h4>Suggested Prompts</h4>
+                <button class="suggest-btn" data-prompt="Summarize the core concepts in the active documents.">Summarize core concepts</button>
+                <button class="suggest-btn" data-prompt="What are the key terms and their definitions?">List key terms</button>
+                <button class="suggest-btn" data-prompt="Explain the most complex topic discussed here in simple terms.">Explain complex topics simply</button>
+                <button class="suggest-btn" data-prompt="Create a brief Study Schedule to cover these materials.">Create a study schedule</button>
+              </div>
+            </div>
+
+            <div class="chat-main">
+              <div class="chat-header-info">
+                <span class="active-context-tag" id="chat-active-docs">Active Context: 0 files</span>
+                <button class="btn-text text-danger" id="btn-clear-chat"><i class="fa-solid fa-broom"></i> Clear Chat</button>
+              </div>
+
+              <!-- Chat Messages Panel -->
+              <div class="chat-messages" id="chat-messages">
+                <div class="chat-bubble system">
+                  <div class="avatar"><i class="fa-solid fa-robot"></i></div>
+                  <div class="bubble-content">
+                    <p>Hello! I am your <strong>StudyVerse AI Assistant</strong>. 📚</p>
+                    <p>Ask me anything about your uploaded study materials. I will scan the active documents to provide accurate answers, definitions, and walkthroughs.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Chat Input Panel -->
+              <div class="chat-input-panel">
+                <textarea id="chat-input" placeholder="Ask a question about your study materials..." rows="1"></textarea>
+                <button class="btn-chat-send" id="btn-send-message" aria-label="Send Message">
+                  <i class="fa-solid fa-paper-plane"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SUMMARY TAB -->
+        <section id="tab-summary" class="tab-page">
+          <div class="summary-container">
+            <div class="summary-controls-card">
+              <h3><i class="fa-solid fa-wand-magic-sparkles"></i> AI Summary Generator</h3>
+              <p>Choose your summary scope and style to generate concise summaries, bulleted outlines, and glossaries.</p>
+              
+              <div class="summary-options grid-3col">
+                <div class="summary-opt-card active" data-type="comprehensive">
+                  <i class="fa-solid fa-book-open"></i>
+                  <h5>Comprehensive</h5>
+                  <p>In-depth synthesis of major themes and detailed sections.</p>
+                </div>
+                <div class="summary-opt-card" data-type="bullets">
+                  <i class="fa-solid fa-list-ul"></i>
+                  <h5>Key Takeaways</h5>
+                  <p>Concise bullet points focusing on facts and definitions.</p>
+                </div>
+                <div class="summary-opt-card" data-type="glossary">
+                  <i class="fa-solid fa-tags"></i>
+                  <h5>Glossary</h5>
+                  <p>A structured dictionary of terms and equations.</p>
+                </div>
+              </div>
+
+              <div class="summary-actions">
+                <button class="btn btn-primary" id="btn-generate-summary">
+                  <i class="fa-solid fa-file-circle-plus"></i> Generate Summary
+                </button>
+              </div>
+            </div>
+
+            <!-- Summary Results Panel -->
+            <div class="summary-results-card" id="summary-results-container" style="display:none;">
+              <div class="results-header">
+                <h4>Generated Summary</h4>
+                <div class="result-actions">
+                  <button class="btn btn-secondary-light btn-sm" id="btn-copy-summary">
+                    <i class="fa-solid fa-copy"></i> Copy
+                  </button>
+                  <button class="btn btn-secondary-light btn-sm" id="btn-download-summary">
+                    <i class="fa-solid fa-download"></i> Download MD
+                  </button>
+                </div>
+              </div>
+              <div class="results-body markdown-content" id="summary-result-content">
+                <!-- Summary is loaded here -->
+              </div>
+            </div>
+
+            <!-- Summary Empty state -->
+            <div class="empty-state-card" id="summary-empty">
+              <i class="fa-solid fa-file-lines"></i>
+              <h4>No Summary Generated</h4>
+              <p>Select your documents in the vault, choose a summary type above, and click "Generate Summary".</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- QUIZZES TAB -->
+        <section id="tab-quizzes" class="tab-page">
+          <div class="quizzes-container">
+            
+            <!-- Settings panel for Quiz Generation -->
+            <div class="quiz-generator-panel" id="quiz-setup-panel">
+              <h3><i class="fa-solid fa-gamepad"></i> AI Practice Quiz Builder</h3>
+              <p>Test your knowledge! Create custom interactive assessments based directly on your study materials.</p>
+              
+              <div class="quiz-settings-grid">
+                <div class="settings-group">
+                  <label for="quiz-questions-count">Number of Questions</label>
+                  <select id="quiz-questions-count">
+                    <option value="5">5 Questions</option>
+                    <option value="10" selected>10 Questions</option>
+                    <option value="15">15 Questions</option>
+                  </select>
+                </div>
+                <div class="settings-group">
+                  <label for="quiz-difficulty">Difficulty Level</label>
+                  <select id="quiz-difficulty">
+                    <option value="easy">Easy (Conceptual / Terminology)</option>
+                    <option value="medium" selected>Medium (Standard Analysis)</option>
+                    <option value="hard">Hard (Advanced / Deep Problems)</option>
+                  </select>
+                </div>
+              </div>
+
+              <button class="btn btn-primary" id="btn-generate-quiz">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Build My Quiz
+              </button>
+            </div>
+
+            <!-- Active Quiz Area -->
+            <div class="quiz-play-panel" id="quiz-play-panel" style="display:none;">
+              <div class="quiz-header">
+                <div class="quiz-progress-bar">
+                  <div class="progress-fill" id="quiz-progress-fill" style="width: 0%;"></div>
+                </div>
+                <div class="quiz-header-meta">
+                  <span id="quiz-question-number">Question 1 of 10</span>
+                  <span id="quiz-timer">Time: --:--</span>
+                </div>
+              </div>
+
+              <div class="quiz-question-container">
+                <h4 class="quiz-question-text" id="quiz-question-text">Question text goes here?</h4>
+                <div class="quiz-options-grid" id="quiz-options-container">
+                  <!-- Dynamic buttons -->
+                </div>
+              </div>
+
+              <div class="quiz-actions-footer">
+                <button class="btn btn-outline" id="btn-quit-quiz">Quit Quiz</button>
+                <button class="btn btn-primary" id="btn-next-question" disabled>Next Question <i class="fa-solid fa-chevron-right"></i></button>
+              </div>
+            </div>
+
+            <!-- Quiz Score Summary Area -->
+            <div class="quiz-results-panel" id="quiz-results-panel" style="display:none;">
+              <div class="results-visual">
+                <div class="score-radial">
+                  <span class="score-number" id="quiz-score-display">8/10</span>
+                  <span class="score-label">Score</span>
+                </div>
+                <h4 id="quiz-verdict-title">Excellent Job! 🥳</h4>
+                <p id="quiz-verdict-desc">You show deep understanding of the concepts. Keep reviewing to lock in your score.</p>
+              </div>
+
+              <div class="quiz-review-list" id="quiz-review-list">
+                <!-- Detailed questions review list -->
+              </div>
+
+              <div class="results-actions">
+                <button class="btn btn-primary" id="btn-restart-quiz">Take Another Quiz</button>
+                <button class="btn btn-secondary-light" id="btn-quiz-to-flashcards">Review Flashcards</button>
+              </div>
+            </div>
+
+            <!-- Quiz Empty State -->
+            <div class="empty-state-card" id="quiz-empty-state" style="display:none;">
+              <i class="fa-solid fa-clipboard-question"></i>
+              <h4>No Documents Loaded</h4>
+              <p>Upload files in the vault first to generate customized quizzes.</p>
+              <button class="btn btn-primary" id="btn-quiz-empty-go-vault">Go to Materials Vault</button>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- FLASHCARDS TAB -->
+        <section id="tab-flashcards" class="tab-page">
+          <div class="flashcards-container">
+            
+            <!-- Setup deck generator -->
+            <div class="flashcard-setup-card" id="flash-setup-panel">
+              <h3><i class="fa-solid fa-clone"></i> Smart Flashcard Decks</h3>
+              <p>Synthesize core terms, equations, and topics into double-sided study cards with 3D flip animations.</p>
+              
+              <div class="quiz-settings-grid">
+                <div class="settings-group">
+                  <label for="flash-deck-size">Deck Size</label>
+                  <select id="flash-deck-size">
+                    <option value="8">8 Flashcards</option>
+                    <option value="12" selected>12 Flashcards</option>
+                    <option value="20">20 Flashcards</option>
+                  </select>
+                </div>
+                <div class="settings-group">
+                  <label for="flash-deck-focus">Study Focus</label>
+                  <select id="flash-deck-focus">
+                    <option value="general" selected>General Definitions & Concepts</option>
+                    <option value="equations">Formulas, Laws & Equations</option>
+                    <option value="qa">Question & Answer Format</option>
+                  </select>
+                </div>
+              </div>
+
+              <button class="btn btn-primary" id="btn-generate-flashcards">
+                <i class="fa-solid fa-wand-magic"></i> Generate Cards
+              </button>
+            </div>
+
+            <!-- Active Deck Area -->
+            <div class="flashcard-active-panel" id="flash-active-panel" style="display:none;">
+              <div class="deck-header">
+                <span id="deck-progress">Card 1 of 12</span>
+                <div class="deck-score-badge">
+                  <i class="fa-solid fa-circle-check text-success"></i> <span id="deck-mastered-count">0</span> Mastered
+                </div>
+              </div>
+
+              <!-- 3D Card Container -->
+              <div class="flashcard-wrapper">
+                <div class="flashcard" id="flashcard-element">
+                  <div class="card-face card-front">
+                    <div class="card-tag">QUESTION / TERM</div>
+                    <div class="card-content">
+                      <p id="card-front-text">What is the mitochondria?</p>
+                    </div>
+                    <div class="card-hint">
+                      <i class="fa-solid fa-arrows-rotate"></i> Click card to flip
+                    </div>
+                  </div>
+                  <div class="card-face card-back">
+                    <div class="card-tag">ANSWER / DEFINITION</div>
+                    <div class="card-content">
+                      <p id="card-back-text">The powerhouse of the cell, responsible for cellular respiration and generating ATP energy.</p>
+                    </div>
+                    <div class="card-hint">
+                      <i class="fa-solid fa-arrows-rotate"></i> Click card to flip back
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Answer rating controls -->
+              <div class="flashcard-rating-controls">
+                <button class="btn btn-danger btn-rating" id="btn-rate-again">
+                  <i class="fa-solid fa-rotate-left"></i> Study Again
+                </button>
+                <button class="btn btn-success btn-rating" id="btn-rate-gotit">
+                  <i class="fa-solid fa-check"></i> Got It!
+                </button>
+              </div>
+
+              <div class="deck-footer">
+                <button class="btn btn-outline" id="btn-close-deck">Exit Deck</button>
+                <div class="deck-nav-buttons">
+                  <button class="btn-circle" id="btn-prev-card" disabled><i class="fa-solid fa-arrow-left"></i></button>
+                  <button class="btn-circle" id="btn-next-card"><i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Flashcard Empty State -->
+            <div class="empty-state-card" id="flash-empty-state" style="display:none;">
+              <i class="fa-solid fa-table-cells-large"></i>
+              <h4>No Decks Available</h4>
+              <p>Upload document content to generate smart flashcards.</p>
+              <button class="btn btn-primary" id="btn-flash-empty-go-vault">Go to Materials Vault</button>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- STUDY PLANNER TAB -->
+        <section id="tab-planner" class="tab-page">
+          <div class="planner-container">
+            
+            <div class="planner-setup-card" id="planner-setup-panel">
+              <h3><i class="fa-solid fa-calendar-check"></i> Personalized Study Roadmap</h3>
+              <p>Create a customized timeline to break down your materials logically, estimate study duration, and checklist key milestones.</p>
+              
+              <div class="planner-settings grid-2col">
+                <div class="settings-group">
+                  <label for="planner-timeframe">Study Timeframe</label>
+                  <select id="planner-timeframe">
+                    <option value="3">3-Day Intensive Sprint</option>
+                    <option value="7" selected>7-Day Structured Plan</option>
+                    <option value="14">2-Week Academic Schedule</option>
+                    <option value="30">1-Month Master Study Plan</option>
+                  </select>
+                </div>
+                <div class="settings-group">
+                  <label for="planner-hours">Hours Available Daily</label>
+                  <select id="planner-hours">
+                    <option value="1">1 Hour / Day</option>
+                    <option value="2" selected>2 Hours / Day</option>
+                    <option value="4">4 Hours / Day</option>
+                    <option value="6">6+ Hours / Day (Deep Study)</option>
+                  </select>
+                </div>
+              </div>
+
+              <button class="btn btn-primary" id="btn-generate-planner">
+                <i class="fa-solid fa-road"></i> Draft Study Plan
+              </button>
+            </div>
+
+            <!-- Active Roadmap Display -->
+            <div class="planner-roadmap-card" id="planner-active-panel" style="display:none;">
+              <div class="results-header">
+                <h4>Your Study Roadmap</h4>
+                <div class="result-actions">
+                  <button class="btn btn-secondary-light btn-sm" id="btn-download-planner">
+                    <i class="fa-solid fa-download"></i> Download MD
+                  </button>
+                </div>
+              </div>
+              
+              <div class="roadmap-summary-bar">
+                <div class="summary-metric">
+                  <i class="fa-solid fa-hourglass-half"></i>
+                  <span>Duration: <strong id="road-duration">7 Days</strong></span>
+                </div>
+                <div class="summary-metric">
+                  <i class="fa-solid fa-clock"></i>
+                  <span>Daily Effort: <strong id="road-effort">2 hours</strong></span>
+                </div>
+                <div class="summary-metric">
+                  <i class="fa-solid fa-percent"></i>
+                  <span>Roadmap Progress: <strong id="road-progress-percent">0%</strong></span>
+                </div>
+              </div>
+
+              <!-- Roadmap Timeline -->
+              <div class="roadmap-timeline" id="planner-timeline-container">
+                <!-- Timeline items -->
+              </div>
+            </div>
+
+            <!-- Planner Empty State -->
+            <div class="empty-state-card" id="planner-empty-state" style="display:none;">
+              <i class="fa-solid fa-route"></i>
+              <h4>No Planner Generated</h4>
+              <p>Connect your study materials in the vault to outline an structured AI study roadmap.</p>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- SETTINGS TAB -->
+        <section id="tab-settings" class="tab-page">
+          <div class="settings-container">
+            
+            <div class="settings-card">
+              <h3><i class="fa-solid fa-key"></i> Gemini API Configuration</h3>
+              <p class="subtitle">Enter your Gemini API key to activate premium AI capabilities. The key is stored locally in your browser's <code>localStorage</code> and is never transmitted anywhere else.</p>
+              
+              <div class="settings-form">
+                <div class="form-group">
+                  <label for="settings-api-key">Gemini API Key</label>
+                  <div class="input-password-wrapper">
+                    <input type="password" id="settings-api-key" placeholder="AIzaSy...">
+                    <button class="btn-toggle-visibility" id="btn-toggle-key-visibility" aria-label="Toggle visibility">
+                      <i class="fa-solid fa-eye"></i>
+                    </button>
+                  </div>
+                  <span class="field-help">Don't have a key? Get one for free at the <a href="https://aistudio.google.com/" target="_blank">Google AI Studio <i class="fa-solid fa-arrow-up-right-from-square"></i></a>.</span>
+                </div>
+
+                <div class="form-group">
+                  <label for="settings-ai-model">AI Model Selection</label>
+                  <select id="settings-ai-model">
+                    <option value="gemini-1.5-flash" selected>Gemini 1.5 Flash (Recommended - Fastest)</option>
+                    <option value="gemini-1.5-pro">Gemini 1.5 Pro (Best for Complex Content)</option>
+                  </select>
+                </div>
+
+                <div class="form-actions">
+                  <button class="btn btn-primary" id="btn-save-settings">Save API Key</button>
+                  <button class="btn btn-outline" id="btn-clear-settings">Remove Key</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-card">
+              <h3><i class="fa-solid fa-circle-question"></i> How it works</h3>
+              <div class="help-grid">
+                <div class="help-item">
+                  <i class="fa-solid fa-file-import text-primary"></i>
+                  <div>
+                    <h5>1. Vault uploads</h5>
+                    <p>When you drop file resources, StudyVerse processes PDFs and raw text client-side, making the text available to the workspace.</p>
+                  </div>
+                </div>
+                <div class="help-item">
+                  <i class="fa-solid fa-shield-halved text-success"></i>
+                  <div>
+                    <h5>2. 100% Privacy</h5>
+                    <p>All data analysis and PDF extraction run locally. Your API key communicates directly with Google's API; no third-party backend servers are used.</p>
+                  </div>
+                </div>
+                <div class="help-item">
+                  <i class="fa-solid fa-network-wired text-purple"></i>
+                  <div>
+                    <h5>3. Simulated Demo Mode</h5>
+                    <p>If no API key is supplied, StudyVerse defaults to standard local simulation templates so you can check out the layout, interactive quiz interface, flashcard animations, and planner roadmaps.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Main JavaScript App -->
+  <script src="js/documentProcessor.js" type="module"></script>
+  <script src="js/aiEngine.js" type="module"></script>
+  <script src="js/components.js" type="module"></script>
+  <script src="app.js" type="module"></script>
+</body>
+</html>
