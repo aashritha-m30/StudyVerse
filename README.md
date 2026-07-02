@@ -1,5 +1,7 @@
 # StudyVerse 🎓✨
 
+Live Demo Link : https://aashritha-m30.github.io/StudyVerse/
+
 StudyVerse is a premium, intelligent, client-side web application designed to help students learn more efficiently. Upload study materials (PDFs, text files, and markdown notes) and immediately unlock interactive study companions.
 
 StudyVerse is styled in a beautiful **White and Lavender theme**, featuring elegant glassmorphism, fluid typography, responsive flex/grid layouts, and interactive animations (including 3D flipping flashcards).
